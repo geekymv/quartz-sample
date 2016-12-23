@@ -3,22 +3,57 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="firstTask" class="com.geekymv.quartz.sample.FirstTask"></bean>
-	
 	<!-- 指定调用的对象和方法 -->
+	<!-- concurrent是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	<!-- 
 	<bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="firstTask"></property>
 		<property name="targetMethod" value="doTask"></property>
-		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
         <property name="concurrent" value="false"/>
 	</bean>
-	
+	-->
+	<bean id="secondJob" name="secondJob" class="com.geekymv.quartz.cluster.SecondJob"></bean>
+	<!-- 
+		jobClass:配置任务代理类
+	 -->
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+	 	<property name="jobClass" value="com.geekymv.quartz.cluster.DetailQuartzJobBean"></property>
+	 	<property name="durability" value="true"></property>
+	</bean>
+	 
+	<!-- 
+		targetObject:实际的任务的Bean
+		targetMethod:执行Bean中的哪个方法
+	 -->
 	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="jobDetail"></property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="targetObject" value="secondJob"></entry>
+				<entry key="targetMethod" value="doTask"></entry>
+			</map>
+		</property>
 		<property name="cronExpression" value="0/5 * * * * ?"></property>
 	</bean>
 	
-	<bean id="scheduler" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		
+	<bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="jobDetail"></property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="targetObject" value="secondJob"></entry>
+				<entry key="targetMethod" value="doLog"></entry>
+			</map>
+		</property>
+		<property name="cronExpression" value="0/10 * * * * ?"></property>
+	</bean>
+	
+	
+	<bean id="scheduler" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="applicationContextSchedulerContextKey" value="applicationContext"></property>
+		<property name="configLocation" value="classpath:quartz.properties"></property>
+		<property name="autoStartup" value="true"></property>
+		<property name="overwriteExistingJobs" value="true"></property>
 		<property name="triggers">
 			<list>
 				<ref bean="cronTrigger"/>
