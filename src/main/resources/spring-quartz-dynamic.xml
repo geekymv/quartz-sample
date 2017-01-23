@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="scheduler" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="applicationContextSchedulerContextKey" value="applicationContext"></property>
+		<property name="configLocation" value="classpath:quartz.properties"></property>
+		<property name="autoStartup" value="true"></property>
+		<property name="overwriteExistingJobs" value="true"></property>
+		<property name="triggers">
+			<list>
+			</list>
+		</property>
+	</bean>
+	
+	<bean class="com.geekymv.quartz.dynamic.MyJob"></bean>
+	
+	<bean id="jobService" class="com.geekymv.quartz.service.impl.JobServiceImpl">
+		<property name="scheduler" ref="scheduler"></property>
+	</bean>
+
+</beans>

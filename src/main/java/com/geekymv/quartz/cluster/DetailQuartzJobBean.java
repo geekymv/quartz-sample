@@ -2,11 +2,13 @@ package com.geekymv.quartz.cluster;
 
 import java.lang.reflect.Method;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+@DisallowConcurrentExecution
 public class DetailQuartzJobBean extends QuartzJobBean {
 
 	private ApplicationContext applicationContext;

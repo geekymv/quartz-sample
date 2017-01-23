@@ -15,16 +15,27 @@
 	<bean id="secondJob" name="secondJob" class="com.geekymv.quartz.cluster.SecondJob"></bean>
 	<!-- 
 		jobClass:配置任务代理类
-	 -->
+	 
 	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 	 	<property name="jobClass" value="com.geekymv.quartz.cluster.DetailQuartzJobBean"></property>
 	 	<property name="durability" value="true"></property>
 	</bean>
-	 
+	-->
+	<!-- 
+	<bean id="thirdJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="com.geekymv.quartz.cluster.ThirdJob"></property>
+		<property name="durability" value="true"></property>
+	</bean>
+	
+	<bean id="thirdCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="thirdJob"></property>
+		<property name="cronExpression" value="0/25 * * * * ?"></property>
+	</bean>
+	  -->
 	<!-- 
 		targetObject:实际的任务的Bean
 		targetMethod:执行Bean中的哪个方法
-	 -->
+	
 	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="jobDetail"></property>
 		<property name="jobDataAsMap">
@@ -33,10 +44,10 @@
 				<entry key="targetMethod" value="doTask"></entry>
 			</map>
 		</property>
-		<property name="cronExpression" value="0/5 * * * * ?"></property>
+		<property name="cronExpression" value="0/15 * * * * ?"></property>
 	</bean>
-	
-		
+	 -->
+	<!-- 
 	<bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="jobDetail"></property>
 		<property name="jobDataAsMap">
@@ -47,8 +58,7 @@
 		</property>
 		<property name="cronExpression" value="0/10 * * * * ?"></property>
 	</bean>
-	
-	
+	 -->
 	<bean id="scheduler" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="applicationContextSchedulerContextKey" value="applicationContext"></property>
 		<property name="configLocation" value="classpath:quartz.properties"></property>
@@ -56,11 +66,13 @@
 		<property name="overwriteExistingJobs" value="true"></property>
 		<property name="triggers">
 			<list>
-				<ref bean="cronTrigger"/>
 			</list>
 		</property>
 	</bean>
 	
-	
+	<bean id="jobService" class="com.geekymv.quartz.service.impl.JobServiceImpl">
+		<property name="scheduler" ref="scheduler"></property>
+	</bean>
+ 	
 
 </beans>
