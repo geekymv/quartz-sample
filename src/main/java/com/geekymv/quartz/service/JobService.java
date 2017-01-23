@@ -38,6 +38,8 @@ public interface JobService {
 	 * @createTime: 2017年1月22日 上午10:49:16
 	 * @history:
 	 * @param job void
+	 * @param targetObject 待执行的job class
+	 * @param targetMethod 待执行的job method
 	 */
 	public void addJob(QuartzJob job, String targetObject, String targetMethod);
 	
